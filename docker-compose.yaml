@@ -15,6 +15,7 @@ services:
     - "traefik.docker.network=proxy"
     expose:
     - 80
+    restart: always
     networks:
     - drone
     - proxy
