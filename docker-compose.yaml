@@ -3,37 +3,43 @@ services:
   drone:
     image: drone/drone:1
     volumes:
-      - data:/data
+    - data:/data
     env_file:
-      - .env
-      - .env.rpc_secret
-    ports:
-      - 80:80
-      - 8080:8080
-    restart: always
-    container_name: drone
+    - .env
+    - .env.rpc_secret
+    labels:
+    - "traefik.enable=true"
+    - "traefik.http.routers.drone.entrypoints=websecure"
+    - "traefik.http.routers.drone.rule=Host(`drone.lukemilius.com`)"
+    - "traefik.http.routers.drone.tls=true"
+    - "traefik.docker.network=proxy"
+    expose:
+    - 80
     networks:
-      - drone
+    - drone
+    - proxy
 
 
   drone-runner-1:
     image: drone/drone-runner-docker:1
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    - /var/run/docker.sock:/var/run/docker.sock
     env_file:
-      - .env.runner
-      - .env.rpc_secret
-    ports:
-      - 3000:3000
+    - .env.runner
+    - .env.rpc_secret
+    expose:
+    - 3000
     restart: always
     depends_on:
-      - drone
+    - drone
     container_name: runner-01
     networks:
-      - drone
+    - drone
 
 volumes:
   data:
 networks:
   drone:
+  proxy:
+    external: true
 
