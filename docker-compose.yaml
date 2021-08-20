@@ -1,7 +1,7 @@
 version: '2.2'
 services:
   drone:
-    image: drone/drone:1
+    image: drone/drone:2
     volumes:
     - data:/data
     env_file:
